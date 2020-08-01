@@ -35,9 +35,9 @@ namespace ExternalEventPattern.Services
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Error when sending sms");
-            }
 
-            return false;
+                throw;
+            }
         }
     }
 }

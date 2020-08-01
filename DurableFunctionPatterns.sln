@@ -3,12 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExternalEventPattern", "ExternalEventPattern\ExternalEventPattern.csproj", "{00F69B35-51FF-4278-8C96-ECB9621E1113}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExternalEventPattern", "ExternalEventPattern\ExternalEventPattern.csproj", "{00F69B35-51FF-4278-8C96-ECB9621E1113}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7CE9E317-0042-4A0C-B13D-96905EA736C7}"
 	ProjectSection(SolutionItems) = preProject
 		Readme.md = Readme.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Patterns", "Patterns", "{29AAACD7-7AB0-4BC2-9165-F87EDE7A58B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{00F69B35-51FF-4278-8C96-ECB9621E1113} = {29AAACD7-7AB0-4BC2-9165-F87EDE7A58B6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {34C945ED-AF23-4D4D-9576-83AA9AEF026B}

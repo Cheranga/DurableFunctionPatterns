@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ExternalEventPattern.DataAccess;
 using ExternalEventPattern.Models;
 using ExternalEventPattern.Services;
 using Microsoft.Azure.WebJobs;
@@ -16,7 +17,7 @@ namespace ExternalEventPattern.Functions
         {
             var recipient = context.GetInput<SmsRecipient>();
 
-            var status = await context.CallActivityAsync<bool>(nameof(CreateRecipientFunction), recipient);
+            var status = await context.CallActivityAsync<bool>(nameof(SaveSmsRecipientActivityFunction), recipient);
             if (!status)
             {
                 return;
@@ -24,42 +25,24 @@ namespace ExternalEventPattern.Functions
 
             using (var cts = new CancellationTokenSource())
             {
-                var timeoutTask = context.CreateTimer(context.CurrentUtcDateTime.AddMinutes(1), cts.Token);
-                var waitForSmsSendTask = context.WaitForExternalEvent<SmsSentEvent>("smssentevent");
+                var timeoutTask = context.CreateTimer(context.CurrentUtcDateTime.AddSeconds(30), cts.Token);
+                var waitForSmsSendTask = context.WaitForExternalEvent<SmsEvent>("smssentevent");
 
-                await context.CallActivityAsync(nameof(SendSmsActivityFunction), recipient);
-
+                var retryOptions = new RetryOptions(TimeSpan.FromSeconds(5), 5);
+                await context.CallActivityWithRetryAsync(nameof(SendSmsActivityFunction), retryOptions, recipient);
+                
                 var winner = await Task.WhenAny(timeoutTask, waitForSmsSendTask);
                 if (winner == waitForSmsSendTask)
                 {
                     cts.Cancel();
-                    //
-                    // Update the storage depending on the message sent status.
-                    //
+
+                    await context.CallActivityAsync(nameof(UpdateSmsRecipientActivityFunction), waitForSmsSendTask.Result);
                 }
                 else
-                {
-                    //
-                    // Update the storage stating that the message could not be sent in the said interval
-                    //
+                {   
+                    await context.CallActivityAsync(nameof(UpdateSmsRecipientActivityFunction), new SmsEvent{Id = recipient.Id, Status = RecipientStatus.CouldNotSend});
                 }
             }
-        }
-    }
-
-    public class CreateRecipientFunction
-    {
-        [FunctionName(nameof(CreateRecipientFunction))]
-        public async Task<bool> CreateRecipientAsync([ActivityTrigger] IDurableActivityContext context)
-        {
-            var recipient = context.GetInput<SmsRecipient>();
-            //
-            // TODO:
-            // Create the customer in the storage.
-            //
-            await Task.Delay(TimeSpan.FromSeconds(2));
-
-            return true;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ExternalEventPattern.Configs;
+using ExternalEventPattern.DataAccess;
 using ExternalEventPattern.Models;
 using ExternalEventPattern.Services;
 using Microsoft.Azure.WebJobs;
@@ -44,10 +45,12 @@ namespace ExternalEventPattern.Functions
                 Message = recipient.Message
             });
 
-            await client.RaiseEventAsync(context.InstanceId, "smssentevent", new SmsSentEvent
+            var recipientStatus = status ? RecipientStatus.Sent : RecipientStatus.CouldNotSend;
+
+            await client.RaiseEventAsync(context.InstanceId, "smssentevent", new SmsEvent
             {
                 Id = recipient.Id,
-                Status = status
+                Status = recipientStatus
             });
         }
     }
