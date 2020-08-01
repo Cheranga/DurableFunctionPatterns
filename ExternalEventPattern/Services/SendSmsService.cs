@@ -28,7 +28,7 @@ namespace ExternalEventPattern.Services
                     body: request.Message,
                     client: _twilioRestClient);
 
-                var status = operation.Status == MessageResource.StatusEnum.Accepted;
+                var status = operation.Status == MessageResource.StatusEnum.Queued;
 
                 return status;
             }

@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
 using ExternalEventPattern.Configs;
 using Twilio.Clients;
 using Twilio.Http;
+using HttpClient = Twilio.Http.HttpClient;
 
 namespace ExternalEventPattern.Services
 {
@@ -9,9 +11,10 @@ namespace ExternalEventPattern.Services
     {
         private readonly ITwilioRestClient _innerClient;
 
-        public CustomTwilioClient(SmsConfiguration smsConfiguration, System.Net.Http.HttpClient httpClient)
+        public CustomTwilioClient(SmsConfiguration smsConfiguration, System.Net.Http.HttpClient httpClient, IHttpClientFactory httpClientFactory)
         {
-            _innerClient = new TwilioRestClient(smsConfiguration.AccountSid, smsConfiguration.AuthToken, httpClient:new SystemNetHttpClient(httpClient));
+            var twilioClient = httpClientFactory.CreateClient("twilioclient");
+            _innerClient = new TwilioRestClient(smsConfiguration.AccountSid, smsConfiguration.AuthToken, httpClient:new SystemNetHttpClient(twilioClient));
         }
 
         public Response Request(Request request)

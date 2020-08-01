@@ -6,6 +6,8 @@ using ExternalEventPattern.Services;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Types;
 
 namespace ExternalEventPattern.Functions
 {
@@ -23,10 +25,18 @@ namespace ExternalEventPattern.Functions
 
         [FunctionName(nameof(SendSmsActivityFunction))]
         public async Task SendSmsAsync([ActivityTrigger] IDurableActivityContext context,
-            [DurableClient]IDurableOrchestrationClient client)
+            [DurableClient]IDurableOrchestrationClient client
+            /*[TwilioSms(From = "%SmsConfiguration.From%")]IAsyncCollector<CreateMessageOptions> messages*/)
         {
             var recipient = context.GetInput<SmsRecipient>();
-            
+
+            //var message = new CreateMessageOptions(new PhoneNumber(recipient.To))
+            //{
+            //    Body = recipient.Message
+            //};
+
+            //await messages.AddAsync(message);
+
             var status = await _sendSmsService.SendAsync(new SendSmsRequest
             {
                 From = recipient.From,
