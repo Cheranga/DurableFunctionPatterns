@@ -29,8 +29,8 @@ namespace ExternalEventPattern
 
             services.AddSingleton(new SmsConfiguration
             {
-                AuthToken = Environment.GetEnvironmentVariable("SmsConfiguration.AuthToken"),
-                AccountSid = Environment.GetEnvironmentVariable("SmsConfiguration.AccountSid"),
+                AuthToken = Environment.GetEnvironmentVariable("AzureWebJobsTwilioAuthToken"),
+                AccountSid = Environment.GetEnvironmentVariable("AzureWebJobsTwilioAccountSid"),
                 FromNumber = Environment.GetEnvironmentVariable("SmsConfiguration.FromNumber")
             });
         }
